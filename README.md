@@ -1,4 +1,4 @@
-# AWS IoT SiteWise cold tier Re-partitioning
+# Anomaly Detection Sample for AWS IoT SiteWise
 
 ## Table of contents
 1. [About this Repo](#about-this-repo)
