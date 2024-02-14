@@ -1,0 +1,30 @@
+[
+    {
+        "alias": "sample/chicago/welding/LINE/ASSET/joint1_current",
+        "min_normal": 35,
+        "max_normal": 40,
+        "min_anomaly": 5,
+        "max_anomaly": 10
+    },
+    {
+        "alias": "sample/chicago/welding/LINE/ASSET/joint1_temperature",
+        "min_normal": 40,
+        "max_normal": 45,
+        "min_anomaly": 95,
+        "max_anomaly": 100
+    },
+    {
+        "alias": "sample/chicago/welding/LINE/ASSET/joint2_current",
+        "min_normal": 35,
+        "max_normal": 40,
+        "min_anomaly": 5,
+        "max_anomaly": 10
+    },
+    {
+        "alias": "sample/chicago/welding/LINE/ASSET/joint2_temperature",
+        "min_normal": 40,
+        "max_normal": 45,
+        "min_anomaly": 95,
+        "max_anomaly": 100
+    }
+]

@@ -1,0 +1,12 @@
+metadata_bulk_operations:
+  s3_bucket_name: <METADATA_IMPORT_BUCKET_NAME>
+data_import:
+  s3_bucket_name: <DATA_IMPORT_BUCKET_NAME>
+  error_prefix: data-bulk-import/errors/
+  data_prefix: data-bulk-import/data/
+  role_arn: <DATA_IMPORT_ROLE_ARN>
+lookout_for_equipment:
+  s3_bucket_name: <L4E_BUCKET_NAME>
+  labels_prefix: l4e/labels/
+  role_arn: <L4E_ROLE_ARN>
+  action_name: AWS/L4E_TRAINING_WITH_INFERENCE

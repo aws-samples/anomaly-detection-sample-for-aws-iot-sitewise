@@ -1,0 +1,66 @@
+[
+    {
+        "name": "AWS/L4E_ANOMALY_PERMISSIONS",
+        "dataType": "STRUCT",
+        "dataTypeSpec": "AWS/L4E_ANOMALY_PERMISSIONS",
+        "type": {
+            "attribute": {}
+        }
+    },
+    {
+        "name": "AWS/L4E_ANOMALY_INPUT",
+        "dataType": "STRUCT",
+        "dataTypeSpec": "AWS/L4E_ANOMALY_INPUT",
+        "type": {
+            "attribute": {}
+        }
+    },
+    {
+        "name": "AWS/L4E_ANOMALY_DATASET",
+        "dataType": "STRUCT",
+        "dataTypeSpec": "AWS/L4E_ANOMALY_DATASET",
+        "type": {
+            "attribute": {}
+        }
+    },
+    {
+        "name": "AWS/L4E_ANOMALY_MODEL",
+        "dataType": "STRUCT",
+        "dataTypeSpec": "AWS/L4E_ANOMALY_MODEL",
+        "type": {
+            "attribute": {}
+        }
+    },
+    {
+        "name": "AWS/L4E_ANOMALY_INFERENCE",
+        "dataType": "STRUCT",
+        "dataTypeSpec": "AWS/L4E_ANOMALY_INFERENCE",
+        "type": {
+            "attribute": {}
+        }
+    },
+    {
+        "name": "AWS/L4E_ANOMALY_TRAINING_STATUS",
+        "dataType": "STRUCT",
+        "dataTypeSpec": "AWS/L4E_ANOMALY_TRAINING_STATUS",
+        "type": {
+            "attribute": {}
+        }
+    },
+    {
+        "name": "AWS/L4E_ANOMALY_INFERENCE_STATUS",
+        "dataType": "STRUCT",
+        "dataTypeSpec": "AWS/L4E_ANOMALY_INFERENCE_STATUS",
+        "type": {
+            "attribute": {}
+        }
+    },
+    {
+        "name": "AWS/L4E_ANOMALY_RESULT",
+        "dataType": "STRUCT",
+        "dataTypeSpec": "AWS/L4E_ANOMALY_RESULT",
+        "type": {
+            "measurement": {}
+        }
+    }
+]
