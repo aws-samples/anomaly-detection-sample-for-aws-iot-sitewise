@@ -51,6 +51,7 @@ job_ids = []
 
 # Load configuration
 with open(f'{project_root_dir_path}/config/project_config.yml', 'r') as file:
+    project_config = yaml.safe_load(file)
     data_import_config = project_config["data_import"]
     lookout_for_equipment_config = project_config["lookout_for_equipment"]
 
