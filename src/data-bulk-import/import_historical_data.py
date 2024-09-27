@@ -16,15 +16,7 @@
 
 # Usage:
 '''
-python3 src/data-bulk-import/import_historical_data.py \
-  --s3-bucket <S3_BUCKET_NAME> \
-  --role-arn <DATA_IMPORT_IAM_ROLE_ARN>
-'''
-# Examples:
-'''
-python3 src/data-bulk-import/import_historical_data.py \
-  --s3-bucket my-bucket-name-123 \
-  --role-arn arn:aws:iam::087150207000:role/Data_Import_Role
+python3 src/data-bulk-import/import_historical_data.py
 '''
 
 import os
@@ -35,7 +27,6 @@ import glob
 import yaml
 import boto3
 import shutil
-import argparse
 
 sitewise = boto3.client('iotsitewise')
 s3 = boto3.client('s3')
@@ -194,30 +185,14 @@ def clean_up_data_dir()  -> None:
         print(f'\n{utc_time_log_prefix()}Removed all the files under {labels_dir}')
 
 if __name__ == "__main__":
-    # Get argument inputs
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--role-arn", action="store", dest="role_arn")
-    parser.add_argument("--s3-bucket", action="store", dest="s3_bucket_name")
-    args = parser.parse_args()
-    
-    role_arn = args.role_arn
-    s3_bucket_name = args.s3_bucket_name
-    
-    if not s3_bucket_name:
-        print("No --s3-bucket argument provided, looking from config file..")
-        if data_import_config["s3_bucket_name"]:
-            print(f"\tFound S3 bucket name from config file")
-            s3_bucket_name = data_import_config["s3_bucket_name"]
-
-    if not role_arn:
-        print("No --role-arn argument provided, looking from config file..")
-        if data_import_config["role_arn"]:
-            print(f"\tFound role arn from config file")
-            role_arn = data_import_config["role_arn"]
+    print(f"Loading from config file..")
+    data_import_s3_bucket_name = data_import_config["s3_bucket_name"]
+    l4e_s3_bucket_name = lookout_for_equipment_config["s3_bucket_name"]
+    role_arn = data_import_config["role_arn"]
             
-    upload_history_to_s3(s3_bucket_name)
-    upload_labels_to_s3(s3_bucket_name)
-    create_jobs(s3_bucket_name, role_arn)
+    upload_history_to_s3(data_import_s3_bucket_name)
+    upload_labels_to_s3(l4e_s3_bucket_name)
+    create_jobs(data_import_s3_bucket_name, role_arn)
     check_job_status()
     clean_up_data_dir()
 
