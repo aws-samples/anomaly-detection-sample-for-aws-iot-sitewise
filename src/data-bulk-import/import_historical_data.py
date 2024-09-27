@@ -51,7 +51,8 @@ job_ids = []
 
 # Load configuration
 with open(f'{project_root_dir_path}/config/project_config.yml', 'r') as file:
-    data_import_config = yaml.safe_load(file)["data_bulk_import"]
+    data_import_config = project_config["data_import"]
+    lookout_for_equipment_config = project_config["lookout_for_equipment"]
 
 def utc_time_log_prefix() -> str:
     current_time_utc = datetime.now(timezone.utc)
@@ -88,7 +89,7 @@ def upload_history_to_s3(s3_bucket_name) -> None:
 def upload_labels_to_s3(s3_bucket_name) -> None:
     # Delete any existing objects
     print(f'\n{utc_time_log_prefix()}Deleting any existing labels in Amazon S3..')
-    delete_s3_objects_with_prefix(s3_bucket_name, data_import_config["labels_prefix"])
+    delete_s3_objects_with_prefix(s3_bucket_name, lookout_for_equipment_config["labels_prefix"])
 
     print(f'\n{utc_time_log_prefix()}Uploading labels to Amazon S3..')
     label_files = glob.glob(os.path.join(labels_dir, "*"))
@@ -96,7 +97,7 @@ def upload_labels_to_s3(s3_bucket_name) -> None:
     for idx, local_file_path in enumerate(label_files):
         file_name = local_file_path.split('/')[-1]
         asset_external_id = file_name.replace("_labels.csv","")
-        s3_key = f'{data_import_config["labels_prefix"]}{asset_external_id}/{file_name}'
+        s3_key = f'{lookout_for_equipment_config["labels_prefix"]}{asset_external_id}/{file_name}'
         s3.upload_file(local_file_path, s3_bucket_name, s3_key)
     print(f'\t{utc_time_log_prefix()}Successfully uploaded to S3!')
     
