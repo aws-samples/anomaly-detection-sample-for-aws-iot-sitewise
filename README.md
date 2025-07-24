@@ -13,7 +13,7 @@
 4. [Clean up](#4-clean-up)
 
 ## About this Repo
-This repo provides code samples to experiment with the private beta version of new native multi-variate anomaly detection feature offered by AWS IoT SiteWise. This feature simplifies the anomaly detection workflow for customers by removing depending on Amazon Lookout for Equipment service which is on de-emphasis path.
+This repo provides code samples to experiment with the private beta version of new native multi-variate anomaly detection feature offered by AWS IoT SiteWise. This feature simplifies the anomaly detection workflow for customers by removing dependency on Amazon Lookout for Equipment service, which is no longer available to new customers effective October 17, 2024.
 
 The code samples provide an end-to-end experience, from onboarding assets and importing historical data to training an anomaly detection model and retrieving the anomaly results.
 
@@ -24,7 +24,6 @@ The code samples provide an end-to-end experience, from onboarding assets and im
 1. Configure [AWS credentials](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html) either using config file or shared credential file. Ensure your region is configured in the config file.
 2. Clone this `Git` repository and install required Python packages by running `pip3 install -r requirements.txt`
 3. Ensure Python 3 is installed on your system, you can verify by running `python3 --version` or `python --version` (on Windows).
-4. Configure AWS IoT SiteWise service model by running `aws configure add-model --service-model file://iotsitewise-2019-12-02.api.json`. You can find the latest model at [iotsitewise-2019-12-02.api.json](assets/docs/iotsitewise-2019-12-02.normal.json)
 
 ## How to use?
 ### 1) Configure the project
