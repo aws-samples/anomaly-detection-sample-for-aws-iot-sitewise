@@ -159,9 +159,11 @@ You may want to extract certain values from the raw result payload (for example,
 In order to do this, you could leverage AWS IoT SiteWise [formula expressions](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/formula-expressions.html) or Grafana [Transformations](https://grafana.com/docs/grafana/latest/panels-visualizations/query-transform-data/transform-data/).
 
 **Example 1: Extract anomaly_score in AWS IoT SiteWise**
+
 <img src="assets/images/extract_score_sitewise.png">
 
 **Example 2: Extract anomaly_score in Grafana**
+
 <img src="assets/images/extract_score_grafana.png">
 
 ### 7) Troubleshooting
