@@ -1,33 +1,32 @@
 metadata_bulk_operations:
-  s3_bucket_name: 272786750436-labs
+  s3_bucket_name: <VALUE>
 data_import:
-  s3_bucket_name: 272786750436-labs
-  error_prefix: data-bulk-import/errors/
-  data_prefix: data-bulk-import/data/
-  role_arn: arn:aws:iam::272786750436:role/SiteWiseBulkImportRole
+  s3_bucket_name: <VALUE>
+  error_prefix: <VALUE>
+  data_prefix: <VALUE>
+  role_arn: <VALUE>
 anomaly_detection:
-  asset_id: fc1b355e-513b-443d-9c13-51daf5bed260
+  asset_id: <VALUE>
   input_property_ids:
-    - 4ce4530f-a790-476e-a1fc-99f70e3345c9
-    - 6eb1e060-9493-4b3d-91ed-61dd70b9033e
-    - c0c53468-1efa-4386-9f39-349b54e83678
-    - d485fe1c-a0af-491d-bb90-9fc0292d7123
-    - fea99148-0c76-4a73-b158-57c31934353c
-  result_property_id: 115710a9-3d20-4c37-ae5f-2d252e887da2
-  computation_model_name: NUMZY00399_computational_model
+    - <VALUE>
+    - <VALUE>
+    - <VALUE>
+    - <VALUE>
+  result_property_id: <VALUE>
+  computation_model_name: <VALUE>
   training:
-    data_start_time: 1706248800
-    data_end_time: 1721019600
-    target_sampling_rate: PT1M
+    data_start_time: <VALUE>
+    data_end_time: <VALUE>
+    target_sampling_rate: <VALUE>
     labels:
-      bucket_name: tdmp-dev-us-east-1-sitewise-mls
-      prefix: NUMZY00399-from-prod/labels/
+      bucket_name: <VALUE>
+      prefix: <VALUE>
     evaluation:
-      bucket_name: tdmp-dev-us-east-1-sitewise-native-ad
-      prefix: NUMZY00399-from-prod/evaluation_results/
-      data_start_time: 1721019600
-      data_end_time: 1725166800
+      bucket_name: <VALUE>
+      prefix: <VALUE>
+      data_start_time: <VALUE>
+      data_end_time: <VALUE>
   inference:
-    data_delay_offset_minutes: 2
-    data_upload_frequency: PT1H
-    weekly_operating_window: 
+    data_delay_offset_minutes: <VALUE>
+    data_upload_frequency: <VALUE>
+    weekly_operating_window: <VALUE>

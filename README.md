@@ -27,7 +27,7 @@ The code samples provide an end-to-end experience, from onboarding assets and im
 
 ## How to use?
 ### 1) Configure the project
-Review the configuration in the [project_config.yml](config/project_config.yml) file and update the placeholder values.
+Review the configuration in the [project_config.yml](config/project_config.yml) file and update the placeholder values. Refer to a sample configuration at [project_config_sample.yml](config/project_config_sample.yml) file
 
 <pre>
 metadata_bulk_operations
