@@ -1,0 +1,42 @@
+✔  binary-exec-lib: Did not find a file matching the specified patterns
+        ✔ **/*.jar
+        ✔ **/*.exe
+        ✔ **/*.dll
+        ✔ **/*.class
+        ✔ **/*.so
+        ✔ **/*.o
+        ✔ **/*.a
+✔  binary-archive: Did not find a file matching the specified patterns
+        ✔ **/*.zip
+        ✔ **/*.tar
+        ✔ **/*.tar.gz
+        ✔ **/*.7z
+        ✔ **/*.iso
+        ✔ **/*.rpm
+        ✔ **/*.tgz
+✔  binary-document: Did not find a file matching the specified patterns
+        ✔ **/*.pdf
+        ✔ **/*.doc
+        ✔ **/*.docx
+        ✔ **/*.xls
+        ✔ **/*.xlsx
+        ✔ **/*.ppt
+        ✔ **/*.pptx
+        ✔ **/*.odt
+✔  amazon-logo: No file matching hash found
+⚠  third-party-image: Found files
+        ℹ PolicyUrl: https://w.amazon.com/bin/view/Open_Source/Tools/Repolinter/Ruleset/Third-Party-Image
+        ⚠ assets/images/anomaly_result_sitewise_console.png
+        ⚠ assets/images/asset_hierarchy.png
+        ⚠ assets/images/bulk_import_job_console.png
+        ⚠ assets/images/extract_score_grafana.png
+        ⚠ assets/images/extract_score_sitewise.png
+        ⚠ assets/images/grafana_demo.png
+⚠  dataset: Found files
+        ℹ PolicyUrl: https://w.amazon.com/bin/view/Open_Source/Tools/Repolinter/Ruleset/Dataset (src/data-simulation/ebike_data_historical_30_days.csv)
+✔  dockerfile: Did not find a file matching the specified patterns (**/*docker*)
+✔  dockerfile-download-statement: Did not find content matching specified patterns
+✔  internal-url: Did not find content matching specified patterns
+✔  prohibited-license: Did not find content matching specified patterns
+⚠  third-party-license-file: Found files
+        ℹ PolicyUrl: https://w.amazon.com/bin/view/Open_Source/Tools/Repolinter/Ruleset/Third-Party-License-File/ (LICENSE)

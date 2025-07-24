@@ -16,151 +16,145 @@
 
 # Usage:
 '''
-python3 src/metadata-bulk-import/import_sitewise_models_assets.py \
-  --s3-bucket <S3_BUCKET_NAME> \
-  --definitions-file-name <DEFINITION_FILE_NAME>
+python3 metadata-bulk-import/import_sitewise_models_assets.py \
+  --definitions-file-name <value>
 '''
 # Examples:
 '''
 python3 src/metadata-bulk-import/import_sitewise_models_assets.py \
-  --s3-bucket my-bucket-name-123 \
   --definitions-file-name definitions_models_assets.json
 '''
 
-import os
-from datetime import datetime, timezone
+from datetime import datetime
 import time
 import argparse
 import yaml
+import logging
 import boto3
+from pathlib import Path
 
-import_root_dir_path = os.path.abspath(os.path.dirname(__file__))
-src_dir_path = os.path.abspath(os.path.dirname(import_root_dir_path))
-project_root_dir_path = os.path.abspath(os.path.dirname(src_dir_path))
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S %Z'
+)
+logger = logging.getLogger(__name__)
 
-twinmaker = boto3.client('iottwinmaker')
-s3 = boto3.client('s3')
-sitewise = boto3.client('iotsitewise')
+class MetadataImporter:
+    def __init__(self):
+        """Initialize the metadata importer with AWS clients and configuration"""
+        self.twinmaker = boto3.client('iottwinmaker')
+        self.s3 = boto3.client('s3')
+        self.config = self._load_config()
+        
+    def _load_config(self):
+        """Load project configuration"""
+        project_root = Path(__file__).parent.parent.parent
+        config_path = project_root / 'config' / 'project_config.yml'
+        
+        try:
+            with open(config_path, 'r') as file:
+                return yaml.safe_load(file)
+        except Exception as e:
+            logger.error(f"Error loading config: {e}")
+            raise
+    
+    def upload_file_to_s3(self, local_file_path: str, bucket: str, s3_key: str):
+        """Upload a local file to S3 bucket"""
+        try:
+            self.s3.upload_file(local_file_path, bucket, s3_key)
+            logger.info(f'Successfully uploaded file to s3://{bucket}/{s3_key}')
+        except Exception as e:
+            logger.error(f'Failed to upload file to S3: {e}')
+            raise
+    
+    def create_metadata_job(self, job_id: str, s3_bucket: str, s3_key: str):
+        """Create a bulk import job"""
+        try:
+            self.twinmaker.create_metadata_transfer_job(
+                metadataTransferJobId=job_id,
+                sources=[{
+                    'type': 's3',
+                    's3Configuration': {
+                        'location': f'arn:aws:s3:::{s3_bucket}/{s3_key}'
+                    }
+                }],
+                destination={
+                    'type': 'iotsitewise'
+                }    
+            )
+            logger.info(f'\nCreated metadata bulk job with job Id: {job_id}')
+        except Exception as e:
+            logger.error(f'Failed to create metadata transfer job: {e}')
+            raise
+    
+    def monitor_job_status(self, job_id: str):
+        """Monitor and print job status"""
+        logger.info(f'\nChecking status of {job_id} job every 30 seconds..')
+        logger.info(f'Tip: You can also check the status from AWS IoT SiteWise console')
 
-# Load configuration
-with open(f'{project_root_dir_path}/config/project_config.yml', 'r') as file:
-    config = yaml.safe_load(file)
-
-job_id = f'Sample_Bulkimport_{int(datetime.now().timestamp())}'
-
-def utc_time_log_prefix():
-    current_time_utc = datetime.now(timezone.utc)
-    formatted_time = current_time_utc.strftime("%Y-%m-%d %H:%M:%S %Z")
-    return f'[{formatted_time}] '
-
-def confirm_assets_do_not_exist(asset_model_id):
-    assets_do_not_exist = False
-    while True:  
-        res = sitewise.list_assets(assetModelId=asset_model_id)
-        if len(res["assetSummaries"]) == 0:
-            assets_do_not_exist = True
-            break
-    return assets_do_not_exist
-
-# Upload a local file to S3
-def upload_file_to_s3(local_file_path: str, bucket: str, s3_key: str) -> None:
-    """Upload a local file to S3 bucket
-    """
-    s3.upload_file(local_file_path, bucket, s3_key)
-    print(f'\n{utc_time_log_prefix()}Uploaded metadata bulk import schema JSON file to {bucket} S3 bucket!')
-
-# Create a bulk import/export job
-def create_metadata_job(job_id: str, source_type: str, destination_type: str, s3_bucket: str, s3_key: str) -> None:
-    twinmaker.create_metadata_transfer_job(
-        metadataTransferJobId = job_id,
-        sources = [{
-            'type': source_type,
-            's3Configuration': {
-                'location': f'arn:aws:s3:::{s3_bucket}/{s3_key}'
-            }
-        }],
-        destination = {
-            'type': destination_type
-        }    
-    )
-    print(f'\n{utc_time_log_prefix()}Created metadata bulk job with job Id: {job_id}')
-    return True
-
-# Print status of a given job id
-def print_job_status(job_id):
-    print(f'\n{utc_time_log_prefix()}Checking status of {job_id} job every 30 seconds..')
-    print(f'{utc_time_log_prefix()}Tip: You can also check the status from AWS IoT SiteWise console')
-    while True:
-        res = twinmaker.get_metadata_transfer_job(metadataTransferJobId=job_id)
-        state = res["status"]["state"]
-        if state in ('RUNNING', 'COMPLETED'):
+        while True:
             try:
-                progress = res["progress"]
-                print(f'\t{utc_time_log_prefix()}Status: {state} | Total: {progress["totalCount"]}, Suceeded: {progress["succeededCount"]}, Skipped: {progress["skippedCount"]}, Failed: {progress["failedCount"]}')                
-            except:
-                print(f'\t{utc_time_log_prefix()}Status: {state}')
-        elif state == 'ERROR':
-            try:
-                reportUrl = res["reportUrl"]
-                print(f'\t{utc_time_log_prefix()}Status: {state} | Report URL: {reportUrl}')
-            except:
-                print(f'\t{utc_time_log_prefix()}Status: {state}')
-            break
-        else:
-            print(f'\t{utc_time_log_prefix()}Status: {state}')
-        time.sleep(30) # Check status every 30 seconds
-        if state == 'COMPLETED': 
-            print(f'\n{utc_time_log_prefix()}{job_id} job successfully completed!')
-            print(f'{utc_time_log_prefix()}Tip: You can verify the changes in AWS IoT SiteWise console')
-            break
+                res = self.twinmaker.get_metadata_transfer_job(metadataTransferJobId=job_id)
+                state = res["status"]["state"]
+                
+                if state in ('RUNNING', 'COMPLETED'):
+                    progress = res.get("progress", {})
+                    logger.info(
+                        f'\tStatus: {state} | '
+                        f'Total: {progress.get("totalCount", 0)}, '
+                        f'Succeeded: {progress.get("succeededCount", 0)}, '
+                        f'Skipped: {progress.get("skippedCount", 0)}, '
+                        f'Failed: {progress.get("failedCount", 0)}'
+                    )
+                elif state == 'ERROR':
+                    report_url = res.get("reportUrl", "No report URL available")
+                    logger.error(f'\tJob failed with status: {state} | Report URL: {report_url}')
+                    break
+                else:
+                    logger.info(f'\tStatus: {state}')
 
-def disassociate_mapped_data_streams(asset_id):
-    if not asset_id:
-        #print('\nNothing to disassociate as no asset found!..')
-        return True
-    response = sitewise.describe_asset(
-    assetId=asset_id,excludeProperties=False)
-    #print('\nDisassociating data streams from properties..')
-    properties = response["assetProperties"]
-    for property in properties:
-        if "alias" in property and property["alias"]:
-            diassociate_data_stream_from_property(property["alias"], 
-                asset_id, property["id"])
-            #print(f'\tDisassociated {property["alias"]} data stream from {asset_id} asset')
-    time.sleep(5) # Sleep before checking asset status
-    while True:  
-        res = sitewise.describe_asset(assetId=asset_id,excludeProperties=False)
-        if res["assetStatus"] != "UPDATING": 
-            #print('Disassociated data streams from properties')
-            break
-    return True
+                if state == 'COMPLETED':
+                    logger.info(f'\n{job_id} job successfully completed!')
+                    logger.info(f'Tip: You can verify the changes in AWS IoT SiteWise console')
+                    break
 
-def diassociate_data_stream_from_property(alias, asset_id, property_id):
-    sitewise.disassociate_time_series_from_asset_property(
-            alias=alias,
-            assetId=asset_id,
-            propertyId=property_id
-    )
+                time.sleep(30)
+
+            except Exception as e:
+                logger.error(f'Error checking job status: {e}')
+                raise
+    
+    def import_definitions(self, definitions_file_name: str):
+        """Import definitions from file to SiteWise"""
+        try:
+            # Set up paths and job ID
+            import_dir = Path(__file__).parent
+            s3_bucket = self.config["metadata_bulk_operations"]["s3_bucket_name"]
+            local_file_path = import_dir / definitions_file_name
+            s3_key = f'metadata-bulk-import/{definitions_file_name}'
+            job_id = f'Workshop_AD_Import_{int(datetime.now().timestamp())}'
+            
+            # Execute import process
+            self.upload_file_to_s3(local_file_path, s3_bucket, s3_key)
+            self.create_metadata_job(job_id, s3_bucket, s3_key)
+            self.monitor_job_status(job_id)
+            
+            logger.info('\nScript execution completed successfully')
+        except Exception as e:
+            logger.error(f'Import failed: {e}')
+            raise
+
+def main():
+    """Main entry point for the script"""
+    parser = argparse.ArgumentParser(description="Import SiteWise models and assets")
+    parser.add_argument("--definitions-file-name", required=True, 
+                       help="Name of the definitions file")
+    args = parser.parse_args()
+    
+    importer = MetadataImporter()
+    importer.import_definitions(args.definitions_file_name)
 
 if __name__ == "__main__":
-    # Get argument inputs
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--definitions-file-name", action="store", required=True, dest="definitions_file_name")
-    parser.add_argument("--s3-bucket", action="store", dest="s3_bucket_name")
-    args = parser.parse_args()
-
-    definitions_file_name = args.definitions_file_name
-    s3_bucket_name = args.s3_bucket_name
-    if not s3_bucket_name:
-        print("No --s3-bucket argument provided, looking from config file..")
-        if config["metadata_bulk_operations"]["s3_bucket_name"]:
-            print(f"\tFound S3 bucket name from config file")
-            s3_bucket_name = config["metadata_bulk_operations"]["s3_bucket_name"]
-
-    metadata_config_file_path = f'{import_root_dir_path}/{definitions_file_name}'
-    metadata_config_file_S3_key = f'metadata-bulk-import/{definitions_file_name}'
-    
-    upload_file_to_s3(metadata_config_file_path, s3_bucket_name, metadata_config_file_S3_key)
-    create_metadata_job(job_id, 's3', 'iotsitewise', s3_bucket_name, metadata_config_file_S3_key)
-    print_job_status(job_id)
-    print(f'\n{utc_time_log_prefix()}Congratulations! script execution completed.\n')
+    main()

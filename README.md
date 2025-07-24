@@ -13,39 +13,62 @@
 4. [Clean up](#4-clean-up)
 
 ## About this Repo
-This repo provides code samples to experiment with the new [multi-variate anomaly detection feature offered by AWS IoT SiteWise](https://aws.amazon.com/about-aws/whats-new/2023/11/aws-iot-sitewise-multi-variate-anomaly-detection-amazon-lookout-equipment/). The feature is enabled via integration with Amazon Lookout for Equipment. 
-
-This new integration allows customers to directly sync data between AWS IoT SiteWise and Amazon Lookout for Equipment without building a complex set of integrations or writing any code, and then easily build machine learning models directly through AWS IoT SiteWise.
+This repo provides code samples to experiment with the private beta version of new native multi-variate anomaly detection feature offered by AWS IoT SiteWise. This feature simplifies the anomaly detection workflow for customers by removing depending on Amazon Lookout for Equipment service which is on de-emphasis path.
 
 The code samples provide an end-to-end experience, from onboarding assets and importing historical data to training an anomaly detection model and retrieving the anomaly results.
+
+> [!WARNING]  
+> The repo only supports computation models that have direct associations with assets. If you need to use computation models that are associated with asset models instead, you will need to make the necessary changes to the repo.
 
 ## Prerequisites
 1. Configure [AWS credentials](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html) either using config file or shared credential file. Ensure your region is configured in the config file.
 2. Clone this `Git` repository and install required Python packages by running `pip3 install -r requirements.txt`
 3. Ensure Python 3 is installed on your system, you can verify by running `python3 --version` or `python --version` (on Windows).
+4. Configure AWS IoT SiteWise service model by running `aws configure add-model --service-model file://iotsitewise-2019-12-02.api.json`. You can find the latest model at [iotsitewise-2019-12-02.api.json](assets/docs/iotsitewise-2019-12-02.normal.json)
 
 ## How to use?
 ### 1) Configure the project
 Review the configuration in the [project_config.yml](config/project_config.yml) file and update the placeholder values.
 
-|Parameter | Description
-|:-|:-|
-|`metadata_bulk_operations.s3_bucket_name` | Name of the S3 bucket where definitions for metadata bulk import will be stored
-|`data_import.s3_bucket_name` | Name of the S3 bucket where historical data is stored for data bulk import
-|`data_import.error_prefix` | Prefix to use for error files
-|`data_import.data_prefix` | Prefix to use for data files
-|`data_import.role_arn` | ARN of IAM role with required permissions documented at [Create a bulk import job](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/CreateBulkImportJob.html).
-|`lookout_for_equipment.s3_bucket_name` | Name of the S3 bucket where labels are stored for model training
-|`lookout_for_equipment.labels_prefix` | Prefix to use for label files
-|`lookout_for_equipment.role_arn` | ARN of IAM role with required permissions documented at [Detecting equipment anomalies with Amazon Lookout for Equipment](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/anomaly-detection.html#ad-add-prediction-definition-cli).
-|`lookout_for_equipment.action_name` | Name of the action to perform. Possible values: `AWS/L4E_TRAINING`, `AWS/L4E_TRAINING_WITH_INFERENCE` or `AWS/L4E_INFERENCE`.
+<pre>
+metadata_bulk_operations
+|-- s3_bucket_name:  Name of the S3 bucket where definitions for metadata bulk import will be stored
+
+data_import
+|-- s3_bucket_name: Name of the S3 bucket where historical data is stored for data bulk import
+|-- error_prefix: Prefix to use for error files
+|-- data_prefix: Prefix to use for data files
+|-- role_arn: ARN of IAM role with required permissions documented at [Create a bulk import job](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/CreateBulkImportJob.html).
+
+anomaly_detection
+|-- asset_id: Asset ID of the target asset for anomaly detection model training
+|-- input_property_ids: Property IDs of sensors to be included in the model
+|-- result_property_id: Property ID of the property where anomaly result is stored
+|-- computation_model_name: Name of the computation model
+|-- training
+    |-- data_start_time: Start time of training data range (UNIX timestamp)
+    |-- data_end_time: End time of training data range (UNIX timestamp)
+    |-- target_sampling_rate: Sampling rate of the data after post processing by AWS IoT SiteWise
+    |-- labels
+        |-- bucket_name: Name of S3 bucket where labels are stored
+        |-- prefix: Prefix to use for label CSV files
+    |-- evaluation
+        |-- bucket_name: Name of S3 bucket where model evaluation data is stored
+        |-- prefix: Prefix to use for model evaluation data files
+        |-- data_start_time: Start time of evaluation data range (UNIX timestamp)
+        |-- data_end_time:  End time of evaluation data range (UNIX timestamp)
+|-- inference
+    |-- data_delay_offset_minutes: Period of time by which inference on the data is delayed
+    |-- data_upload_frequency: Frequency at which inference is executed
+    |-- weekly_operating_window: Time window during which inferences are executed. Leave it blank to run on a 24/7 window.
+</pre>
 
 ### 2) Create asset models and assets
 AWS IoT SiteWise allows you to model your equipment and processes using SiteWise asset models ("templates") and assets. You can create these resources manually one at a time. But this process could be time-consuming and prone to human errors, especially when dealing with a large number of assets.
 
 AWS IoT SiteWise offers a capability called [bulk operations](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/bulk-operations-assets-and-models.html)  that allows you to seamlessly import thousands of asset models and assets at once using console or API. 
 
-Start a bulk import operation and create an asset hierarchy for **AnyCompany Motor**.
+Start a bulk import operation and create an asset hierarchy for **AnyCompany e-Bikes AD**.
 
     python3 src/metadata-bulk-import/import_sitewise_models_assets.py \
     >   --definitions-file-name definitions_models_assets.json
@@ -60,106 +83,120 @@ Once the bulk import operation is completed, you should see the following asset 
 
 ### 3) Import historical data
 
-To train an anomaly detection model, you need to provide atleast 15 days of historical measurement data and any available labels for the welding robot. [Labels](https://docs.aws.amazon.com/lookout-for-equipment/latest/ug/labeling-data.html) indicate periods when your equipment did not function properly.
+To train an anomaly detection model, you need to provide atleast 15 days of historical measurement data and any available labels for the welding robot. Labels are not supported in the current version of private beta.
 
-You will use [data bulk import](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/ingest-bulkImport.html) feature of AWS IoT SiteWise to upload 6 months of historical data.
+You will use [data bulk import](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/ingest-bulkImport.html) feature of AWS IoT SiteWise to upload 30 days of historical data.
 
 > **Must read**
-> Before you can create a bulk import job, you must enable AWS IoT SiteWise cold tier. Refer to [Configure storage settings for cold tier](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/configure-storage-console.html) for the steps.
+> Before you can create a bulk import job, you must enable AWS IoT SiteWise warm tier or cold tier. Refer to [Configure storage settings in AWS IoT SiteWise](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/configure-storage.html) for the steps.
 
-Simulate 30 days of historical data and labels for **Welding Robot 1-1**. The simulated data will contain periods of anomalous behaviour represented by high joint temperature (in degC) and low joint current (in amperes). Such abnormal behaviour is typically caused due to insufficient lubrication, wear in the parts, and contact issues at the robot joints.
+Simulate 30 days of historical data for **Welding Robot AD** and import it into AWS IoT SiteWise. The simulated data will include temperature and velocity measurements at Joint 0.
 
-    python3 src/data-bulk-import/simulate_historical_data.py \
-    --asset-external-ids Workshop_Robot_1-1
-
-Import the simulated historical data and labels.
-
-    python3 src/data-bulk-import/import_historical_data.py
+    python3 src/data-simulation/import_historical_data.py \
+    --data-file-name ebike_data_historical_30_days.csv
 
 Verify that the historical data is successfully imported. You can also verify the data using [AWS IoT SiteWise Monitor](https://docs.aws.amazon.com/iot-sitewise/latest/appguide/what-is-monitor-app.html) or [Amazon Managed Grafana](https://docs.aws.amazon.com/grafana/latest/userguide/using-iotsitewise-in-AMG.html).
 
-    python3 src/data-bulk-import/verify_historical_data.py
-
 ### 4) Train an anomaly detection model
-Now you can train an anomaly detection model for **Welding Robot 1-1** using the imported historical data and labels. Once trained and ready for inference, the model will start detecting abnormal behavior.
+Now you can train an anomaly detection model for **Welding Robot AD** using the imported historical data. Once trained and ready for inference, the model will start detecting abnormal behavior.
 
-First, you create an anomaly detection template in AWS IoT SiteWise, which is known as **Prediction Definition**. Then, you can use it to train an anomaly detection models at scale for similar assets.
+First, you create a computation model in AWS IoT SiteWise, which serves as a template for anomaly detection. Then, you can use it to train models at scale for similar assets.
 
-Create a prediction definition for **Workshop_Robot** asset model and train an anomaly detection model for **Welding Robot 1-1**.
+Create a computation model and train an anomaly detection model for **Welding Robot AD**.
 
-    python3 src/lookout-for-equipment/create_l4e_model.py \
-    --asset-external-id Workshop_Robot_1-1
+    python3 src/anomaly-detection/train_model.py
 
-Review the newly created prediction definition:
-* Navigate to **AWS IoT SiteWise console** &rarr; **Build** &rarr; **Models** &rarr; **Workshop Robot** &rarr; **Predictions**
-* Choose **Insuffienct_Lubrication_Contact_issues_xxxxxxxxxx** &rarr; **Actions** &rarr; **View**
+You can check the status of the training using the command below. Replace **\<value>** with Asset ID. If there is an issue with training, you could find the error message in the response for troubleshooting.
 
-<img src="assets/images/prediction_definition.png">
+    python3 src/anomaly-detection/execution_status.py \
+    --action TRAINING \
+    --asset-id <value>
 
-Track the training status of anomaly detection model:
-* Scroll down to **Predictions**
-* Choose **Welding Robot 1-1** &rarr; **Actions** &rarr; **View details**
+Start inference for the newly created anomaly detection model. Replace **\<value>** with Computation Model ID.
 
-Wait till the model is trained and ready for inference. 
-
-<img src="assets/images/prediction_definition_detail.png">
-
-To dive-deep into model training performance:
-* Choose **Data training performance**  &rarr; **Lookout for Equipment**.
-* Navigate to **Models** &rarr; **\<MODEL>** &rarr; **Evaluation results** 
-
-<img src="assets/images/data_training_performance.png">
+    python3 src/anomaly-detection/inference_controller.py \
+    --computation-model-id <value> \
+    --mode START
 
 ### 5) Simulate real-time data
 
-Now that the anomaly detection model is ready for inference, once you ingest real-time data, AWS IoT SiteWise prepares the data and makes it available for Amazon Lookout for Equipment to predict anomalies during every inference interval.
+Now that the anomaly detection model is ready for inference, once you ingest real-time data, AWS IoT SiteWise prepares the data and makes it available for the anomaly detection model to predict anomalies during every inference interval.
 
-Simulate the real-time data that is representative of anomalous behaviour in joint 1 of **Welding Robot 1-1**.
+Simulate the real-time data for **Welding Robot AD**.
 
-    python3 src/lookout-for-equipment/simulate_real_time_data.py \
-    --asset-external-id Workshop_Robot_1-1
+    nohup python3 src/data-simulation/simulate_live_data.py \
+    --data-file-name ebike_data_historical_30_days.csv \
+    >> src/data-simulation/data_simulation.log 2>&1 &
 
 You can verify the data ingestion using AWS IoT SiteWise console:
-* Navigate to **Build** &rarr; **Assets** &rarr; **Workshop Robot 1-1**
+* Navigate to **Workshop Robot AD** asset page
 * Choose **Properties** &rarr; **Measurements** &rarr; **\<Measurement>** &rarr; **Latest value timestamp**
  
 ### 6) Retrieve inference results
 
-AWS IoT SiteWise retrieves the anomaly results from Amazon Lookout for Equipment and stores it in a property. You can access these results from AWS IoT SiteWise using [console](https://console.aws.amazon.com/iotsitewise/home), [CLI](https://docs.aws.amazon.com/cli/latest/reference/iotsitewise/), [API](https://docs.aws.amazon.com/iot-sitewise/latest/APIReference/Welcome.html), [SDK](https://aws.amazon.com/developer/tools/) or [property notifications](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/property-notifications.html).
+AWS IoT SiteWise stores the raw anomaly results in a user-defined property provided in the training configuration. You can access these results from AWS IoT SiteWise using [console](https://console.aws.amazon.com/iotsitewise/home), [CLI](https://docs.aws.amazon.com/cli/latest/reference/iotsitewise/), [API](https://docs.aws.amazon.com/iot-sitewise/latest/APIReference/Welcome.html), [SDK](https://aws.amazon.com/developer/tools/), [property notifications](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/property-notifications.html) or [AWS IoT SiteWise plugin for Grafana](https://grafana.com/grafana/plugins/grafana-iot-sitewise-datasource/).
 
-Check the anomaly result using console by navigating to **Build** &rarr; **Assets** &rarr; **\<Asset>** &rarr; **Predictions**.
+Check the anomaly result using console by navigating to **Build** &rarr; **Assets** &rarr; **\<Asset>** &rarr; **Anomaly Result**. It may take 5-10 minutes before you can see the anomaly result.
 
-<img src="assets/images/prediction_result.png">
+<img src="assets/images/anomaly_result_sitewise_console.png">
 
-Run the following to retrieve anomaly result via [Python SDK](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/iotsitewise.html).
+<img src="assets/images/grafana_demo.png">
 
-    python3 src/lookout-for-equipment/retrieve_anomaly_results.py \
-    --asset-external-id Workshop_Robot_1-1
+#### Understanding the results payload
+AWS IoT SiteWise writes the anomaly inference results to the user-defined property. The data is written as a JSON String. 
 
-Here is a sample output showing the anomaly result:
+Here is an explanation of keys from the raw result payload:
+| Key      | Description |
+| -------- | ------- |
+| timestamp  | Timestamp of the inference record |
+| prediction | Indicates equipment behavior where 0 = normal and 1 = abnormal |
+| prediction_reason    | Indicates equipment behavior, NO_ANOMALY_DETECTED or ANOMALY_DETECTED |
+| anomaly_score | Indicates the intensity of the anomaly, ranges between 0 and 1 |
+| diagnostics    | Sensors and their contribution weights in indicating equipment behavior. Format: {"name": <SENSOR_PROPERTY_ID>\\\\<ASSET_ID>, "value": <SENSOR_CONTRIBUTION_WEIGHT> } |
 
-    Found 1 prediction definition(s)
+#### Extracting data from the results payload
+You may want to extract certain values from the raw result payload (for example, prediction anomaly_score) to trigger specific events, such as sending a notification to a machine operator.
 
-    Retrieving anomaly results for each prediction definition..
-        Prediction definition: Insuffienct_Lubrication_Contact_issues_1707658226
-            Prediction: ANOMALY_DETECTED
-            Anomaly Score: 1.0
-            Contributing Sensors
-                Joint 2 Current: 0.9 %
-                Joint 1 Current: 35.4 %
-                Joint 2 Temperature: 10.0 %
-                Joint 1 Temperature: 53.6 %
+In order to do this, you could leverage AWS IoT SiteWise [formula expressions](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/formula-expressions.html) or Grafana [Transformations](https://grafana.com/docs/grafana/latest/panels-visualizations/query-transform-data/transform-data/).
 
-## 4) Clean up
+**Example 1: Extract anomaly_score in AWS IoT SiteWise**
+<img src="assets/images/extract_score_sitewise.png">
+
+**Example 2: Extract anomaly_score in Grafana**
+<img src="assets/images/extract_score_grafana.png">
+
+### 7) Troubleshooting
+
+To troubleshooting issues related to training and inference, you could use the following commands
+
+Check list of training executions for a given asset
+
+    python3 src/anomaly-detection/execution_history.py \
+    --asset-id 58c42075-8af2-4d63-89de-ce38627a5624 \
+    --action TRAINING
+
+Check list of inference executions for a given asset
+
+    python3 src/anomaly-detection/execution_history.py \
+    --asset-id 58c42075-8af2-4d63-89de-ce38627a5624 \
+    --action INFERENCE
+
+
+Check status of the latest training execution
+
+    python3 src/anomaly-detection/execution_status.py \
+    --asset-id 9487f2bd-2c9c-48ce-a958-909e38490b97 \
+    --action TRAINING
+    
+Check status of the latest inference execution including the anomaly result
+
+    python3 src/anomaly-detection/execution_status.py \
+    --asset-id 9487f2bd-2c9c-48ce-a958-909e38490b97 \
+    --action INFERENCE
+    
+## Clean up
 
 You will incur costs for the resources deployed in this sample solution. If you no longer require the solution, ensure you remove the resources to avoid further charges.
 
-Remove all resources specific to Amazon Lookout for Equipment.
-
-    python3 src/cleanup/remove_l4e_resources.py \
-        --asset-external-id Workshop_Robot_1-1
-
-Remove all resources specific to AWS IoT SiteWise.
-
-    python3 src/cleanup/remove_sitewise_resources.py \
-        --asset-external-id Workshop_Corporate_AnyCompany
+    python3 src/clean-up/remove_resources.py \
+    --asset-external-id Workshop_Corporate_AnyCompany_AD

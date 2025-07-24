@@ -1,34 +1,146 @@
 {
     "assetModels": [
         {
-            "assetModelExternalId": "Workshop_Robot",
-            "assetModelName": "Workshop Robot",
+            "assetModelExternalId": "Workshop_Corporate_AD",
+            "assetModelName": "Corporate Model AD",
+            "assetModelDescription": "Amazon Smart Bike Factory Description",
+            "assetModelProperties": [],
+            "assetModelCompositeModels": [],
+            "assetModelHierarchies": [
+                {
+                    "externalId": "Corporate_To_Location_AD",
+                    "name": "Location",
+                    "childAssetModelExternalId": "Workshop_Location_AD"
+                }
+            ],
+            "tags": []
+        },
+        {
+            "assetModelExternalId": "Workshop_Location_AD",
+            "assetModelName": "Location Model AD",
+            "assetModelDescription": "Seattle model Description",
+            "assetModelProperties": [],
+            "assetModelCompositeModels": [],
+            "assetModelHierarchies": [
+                {
+                    "externalId": "Location_To_Line_AD",
+                    "name": "Production Line",
+                    "childAssetModelExternalId": "Workshop_Production_Line_AD"
+                }
+            ],
+            "tags": []
+        },
+        {
+            "assetModelExternalId": "Workshop_Production_Line_AD",
+            "assetModelName": "Production Line Model AD",
+            "assetModelDescription": "Bike Assembly model",
+            "assetModelProperties": [],
+            "assetModelCompositeModels": [],
+            "assetModelHierarchies": [
+                {
+                    "externalId": "Line_To_Welding_Station_AD",
+                    "name": "Welding Station",
+                    "childAssetModelExternalId": "Workshop_Welding_Station_AD"
+                },
+                {
+                    "externalId": "Line_To_Painting_Station_AD",
+                    "name": "Painting Station",
+                    "childAssetModelExternalId": "Workshop_Painting_Station_AD"
+                }
+            ],
+            "tags": []
+        },
+        {
+            "assetModelExternalId": "Workshop_Welding_Station_AD",
+            "assetModelName": "Welding Station Model AD",
+            "assetModelDescription": "Welding station model Description",
             "assetModelProperties": [
                 {
-                    "externalId": "Robot_Serial_Number",
-                    "name": "Serial Number",
-                    "dataType": "STRING",
+                    "externalId": "Welding_Station_Frames_Produced_5m",
+                    "name": "Frames_Produced_5m",
+                    "dataType": "DOUBLE",
                     "type": {
-                        "attribute": {
-                            "defaultValue": "noserial"
+                        "metric": {
+                            "expression": "sum(var4)",
+                            "variables": [
+                                {
+                                    "name": "var4",
+                                    "value": {
+                                        "propertyExternalId": "Welding_Station_Frame_Produced"
+                                    }
+                                }
+                            ],
+                            "window": {
+                                "tumbling": {
+                                    "interval": "5m"
+                                }
+                            }
                         }
                     }
                 },
+                {
+                    "externalId": "Welding_Station_Frame_Produced",
+                    "name": "Frame_Produced",
+                    "dataType": "DOUBLE",
+                    "type": {
+                        "measurement": {}
+                    }
+                }
+            ],
+            "assetModelCompositeModels": [],
+            "assetModelHierarchies": [
+                {
+                    "externalId": "Station_To_Robot_AD",
+                    "name": "Welding Robot",
+                    "childAssetModelExternalId": "Workshop_Welding_Robot_AD"
+                },
+                {
+                    "externalId": "Station_To_Conveyer_AD",
+                    "name": "Welding Conveyer",
+                    "childAssetModelExternalId": "Workshop_Conveyer_AD"
+                }
+            ],
+            "tags": []
+        },
+        {
+            "assetModelExternalId": "Workshop_Painting_Station_AD",
+            "assetModelName": "Painting Station Model AD",
+            "assetModelDescription": "Sealing station model Description",
+            "assetModelProperties": [],
+            "assetModelCompositeModels": [],
+            "assetModelHierarchies": [
+                {
+                    "externalId": "Station_To_Robot_AD",
+                    "name": "Painting Robot",
+                    "childAssetModelExternalId": "Workshop_Painting_Robot_AD"
+                },
+                {
+                    "externalId": "Station_To_Conveyer_AD",
+                    "name": "Painting Conveyer",
+                    "childAssetModelExternalId": "Workshop_Conveyer_AD"
+                }
+            ],
+            "tags": []
+        },
+        {
+            "assetModelExternalId": "Workshop_Welding_Robot_AD",
+            "assetModelName": "Welding Robot Model AD",
+            "assetModelProperties": [
                 {
                     "externalId": "Robot_Manufacturer",
                     "name": "Manufacturer",
                     "dataType": "STRING",
                     "type": {
                         "attribute": {
-                            "defaultValue": "nomanufacturer"
+                            "defaultValue": "-"
                         }
                     }
                 },
                 {
-                    "externalId": "Robot_Joint_1_Current",
-                    "name": "Joint 1 Current",
+                    "externalId": "Robot_Joint_0_Temperature",
+                    "name": "Joint 0 Temperature",
                     "dataType": "DOUBLE",
-                    "unit": "Amps",
+                    "unit": "C",
                     "type": {
                         "measurement": {}
                     }
@@ -37,16 +149,7 @@
                     "externalId": "Robot_Joint_1_Temperature",
                     "name": "Joint 1 Temperature",
                     "dataType": "DOUBLE",
-                    "unit": "degC",
-                    "type": {
-                        "measurement": {}
-                    }
-                },
-                {
-                    "externalId": "Robot_Joint_2_Current",
-                    "name": "Joint 2 Current",
-                    "dataType": "DOUBLE",
-                    "unit": "Amps",
+                    "unit": "C",
                     "type": {
                         "measurement": {}
                     }
@@ -55,7 +158,97 @@
                     "externalId": "Robot_Joint_2_Temperature",
                     "name": "Joint 2 Temperature",
                     "dataType": "DOUBLE",
-                    "unit": "degC",
+                    "unit": "C",
+                    "type": {
+                        "measurement": {}
+                    }
+                },
+                {
+                    "externalId": "Robot_Joint_3_Temperature",
+                    "name": "Joint 3 Temperature",
+                    "dataType": "DOUBLE",
+                    "unit": "C",
+                    "type": {
+                        "measurement": {}
+                    }
+                },
+                {
+                    "externalId": "Robot_Joint_4_Temperature",
+                    "name": "Joint 4 Temperature",
+                    "dataType": "DOUBLE",
+                    "unit": "C",
+                    "type": {
+                        "measurement": {}
+                    }
+                },
+                {
+                    "externalId": "Robot_Joint_5_Temperature",
+                    "name": "Joint 5 Temperature",
+                    "dataType": "DOUBLE",
+                    "unit": "C",
+                    "type": {
+                        "measurement": {}
+                    }
+                },
+                {
+                    "externalId": "Robot_Joint_0_Velocity",
+                    "name": "Joint 0 Velocity",
+                    "dataType": "DOUBLE",
+                    "unit": "deg/sec",
+                    "type": {
+                        "measurement": {}
+                    }
+                },
+                {
+                    "externalId": "Robot_Joint_1_Velocity",
+                    "name": "Joint 1 Velocity",
+                    "dataType": "DOUBLE",
+                    "unit": "deg/sec",
+                    "type": {
+                        "measurement": {}
+                    }
+                },
+                {
+                    "externalId": "Robot_Joint_2_Velocity",
+                    "name": "Joint 2 Velocity",
+                    "dataType": "DOUBLE",
+                    "unit": "deg/sec",
+                    "type": {
+                        "measurement": {}
+                    }
+                },
+                {
+                    "externalId": "Robot_Joint_3_Velocity",
+                    "name": "Joint 3 Velocity",
+                    "dataType": "DOUBLE",
+                    "unit": "deg/sec",
+                    "type": {
+                        "measurement": {}
+                    }
+                },
+                {
+                    "externalId": "Robot_Joint_4_Velocity",
+                    "name": "Joint 4 Velocity",
+                    "dataType": "DOUBLE",
+                    "unit": "deg/sec",
+                    "type": {
+                        "measurement": {}
+                    }
+                },
+                {
+                    "externalId": "Robot_Joint_5_Velocity",
+                    "name": "Joint 5 Velocity",
+                    "dataType": "DOUBLE",
+                    "unit": "deg/sec",
+                    "type": {
+                        "measurement": {}
+                    }
+                },
+                {
+                    "externalId": "Robot_Anomaly_Result",
+                    "name": "Anomaly Result",
+                    "dataType": "STRING",
+                    "unit": "-",
                     "type": {
                         "measurement": {}
                     }
@@ -66,132 +259,253 @@
             "tags": []
         },
         {
-            "assetModelExternalId": "Workshop_Line",
-            "assetModelName": "Workshop Line",
+            "assetModelExternalId": "Workshop_Painting_Robot_AD",
+            "assetModelName": "Painting Robot Model AD",
             "assetModelProperties": [
-            ],
-            "assetModelCompositeModels": [],
-            "assetModelHierarchies": [
                 {
-                    "externalId": "Line_To_Robot",
-                    "name": "Robots",
-                    "childAssetModelExternalId": "Workshop_Robot"
+                    "externalId": "Robot_Manufacturer",
+                    "name": "Manufacturer",
+                    "dataType": "STRING",
+                    "type": {
+                        "attribute": {
+                            "defaultValue": "-"
+                        }
+                    }
                 }
             ],
+            "assetModelCompositeModels": [],
+            "assetModelHierarchies": [],
             "tags": []
         },
         {
-            "assetModelExternalId": "Workshop_Shop",
-            "assetModelName": "Workshop Shop",
-            "assetModelProperties": [],
-            "assetModelCompositeModels": [],
-            "assetModelHierarchies": [
+            "assetModelExternalId": "Workshop_Conveyer_AD",
+            "assetModelName": "Conveyer Model AD",
+            "assetModelProperties": [
                 {
-                    "externalId": "Shop_To_Line",
-                    "name": "Lines",
-                    "childAssetModelExternalId": "Workshop_Line"
+                    "externalId": "Motor2_RealSpeed",
+                    "name": "Motor 2 RealSpeed",
+                    "dataType": "DOUBLE",
+                    "unit": "mm/sec",
+                    "type": {
+                        "measurement": {}
+                    }
+                },
+                {
+                    "externalId": "Motor2_Current",
+                    "name": "Motor 2 Current",
+                    "dataType": "DOUBLE",
+                    "unit": "A",
+                    "type": {
+                        "measurement": {}
+                    }
+                },
+                {
+                    "externalId": "Motor3_RealSpeed",
+                    "name": "Motor 3 RealSpeed",
+                    "dataType": "DOUBLE",
+                    "unit": "mm/sec",
+                    "type": {
+                        "measurement": {}
+                    }
+                },
+                {
+                    "externalId": "Motor3_Current",
+                    "name": "Motor 3 Current",
+                    "dataType": "DOUBLE",
+                    "unit": "A",
+                    "type": {
+                        "measurement": {}
+                    }
                 }
             ],
-            "tags": []
-        },
-        {
-            "assetModelExternalId": "Workshop_Plant",
-            "assetModelName": "Workshop Plant",
-            "assetModelProperties": [],
-            "assetModelCompositeModels": [],
-            "assetModelHierarchies": [
-                {
-                    "externalId": "Plant_To_Shop",
-                    "name": "Shops",
-                    "childAssetModelExternalId": "Workshop_Shop"
-                }
+            "assetModelCompositeModels": [
             ],
-            "tags": []
-        },
-        {
-            "assetModelExternalId": "Workshop_Corporate",
-            "assetModelName": "Workshop Corporate",
-            "assetModelProperties": [],
-            "assetModelCompositeModels": [],
-            "assetModelHierarchies": [
-                {
-                    "externalId": "Corporate_To_Plant",
-                    "name": "Plants",
-                    "childAssetModelExternalId": "Workshop_Plant"
-                }
-            ],
+            "assetModelHierarchies": [],
             "tags": []
         }
     ],
     "assets": [
         {
-            "assetExternalId": "Workshop_Robot_1-1",
-            "assetModelExternalId": "Workshop_Robot",
-            "assetName": "Welding Robot 1-1",
+            "assetExternalId": "Workshop_Corporate_AnyCompany_AD",
+            "assetModelExternalId": "Workshop_Corporate_AD",
+            "assetName": "AnyCompany e-Bikes AD",
+            "assetProperties": [],
+            "assetHierarchies": [
+                {
+                    "externalId": "Corporate_To_Location_AD",
+                    "childAssetExternalId": "Workshop_Location_Seattle_AD"
+                }
+            ],
+            "tags": []
+        },
+        {
+            "assetExternalId": "Workshop_Location_Seattle_AD",
+            "assetModelExternalId": "Workshop_Location_AD",
+            "assetName": "Seattle AD",
+            "assetProperties": [],
+            "assetHierarchies": [
+                {
+                    "externalId": "Location_To_Line_AD",
+                    "childAssetExternalId": "Workshop_Production_Line_1_AD"
+                }
+            ],
+            "tags": []
+        },
+        {
+            "assetExternalId": "Workshop_Production_Line_1_AD",
+            "assetModelExternalId": "Workshop_Production_Line_AD",
+            "assetName": "Bike Assembly Line 1 AD",
+            "assetProperties": [],
+            "assetHierarchies": [
+                {
+                    "externalId": "Line_To_Welding_Station_AD",
+                    "childAssetExternalId": "Workshop_Welding_Station_1_AD"
+                },
+                {
+                    "externalId": "Line_To_Painting_Station_AD",
+                    "childAssetExternalId": "Workshop_Painting_Station_1_AD"
+                }
+            ],
+            "tags": []
+        },
+        {
+            "assetExternalId": "Workshop_Painting_Station_1_AD",
+            "assetModelExternalId": "Workshop_Painting_Station_AD",
+            "assetName": "Painting Station AD",
+            "assetProperties": [],
+            "assetHierarchies": [
+                {
+                    "externalId": "Station_To_Robot_AD",
+                    "childAssetExternalId": "Workshop_Painting_Robot_1_AD"
+                },
+                {
+                    "externalId": "Station_To_Conveyer_AD",
+                    "childAssetExternalId": "Workshop_Painting_Conveyer_1_AD"
+                }
+            ],
+            "tags": []
+        },
+        {
+            "assetExternalId": "Workshop_Welding_Station_1_AD",
+            "assetModelExternalId": "Workshop_Welding_Station_AD",
+            "assetName": "Welding Station AD",
             "assetProperties": [
                 {
-                    "externalId": "Robot_Serial_Number",
-                    "attributeValue": "SN1100"
+                    "externalId": "Welding_Station_Frame_Produced",
+                    "alias": "/Tag Providers/AD/default/Weld/Frame_Produced",
+                    "retainDataOnAliasChange": "FALSE"
+                }
+            ],
+            "assetHierarchies": [
+                {
+                    "externalId": "Station_To_Robot_AD",
+                    "childAssetExternalId": "Workshop_Welding_Robot_1_AD"
                 },
+                {
+                    "externalId": "Station_To_Conveyer_AD",
+                    "childAssetExternalId": "Workshop_Welding_Conveyer_1_AD"
+                }
+            ],
+            "tags": []
+        },
+        {
+            "assetExternalId": "Workshop_Welding_Conveyer_1_AD",
+            "assetModelExternalId": "Workshop_Conveyer_AD",
+            "assetName": "Welding Conveyer AD",
+            "assetProperties": [
+                {
+                    "externalId": "Motor2_Current",
+                    "alias": "/Tag Providers/AD/default/Motor/Motor2/Current",
+                    "retainDataOnAliasChange": "FALSE"
+                },
+                {
+                    "externalId": "Motor3_Current",
+                    "alias": "/Tag Providers/AD/default/Motor/Motor3/Current",
+                    "retainDataOnAliasChange": "FALSE"
+                },
+                {
+                    "externalId": "Motor3_RealSpeed",
+                    "alias": "/Tag Providers/AD/default/Motor/Motor3/RealSpeed",
+                    "retainDataOnAliasChange": "FALSE"
+                },
+                {
+                    "externalId": "Motor2_RealSpeed",
+                    "alias": "/Tag Providers/AD/default/Motor/Motor2/RealSpeed",
+                    "retainDataOnAliasChange": "FALSE"
+                }
+            ],
+            "assetHierarchies": [],
+            "tags": []
+        },
+        {
+            "assetExternalId": "Workshop_Welding_Robot_1_AD",
+            "assetModelExternalId": "Workshop_Welding_Robot_AD",
+            "assetName": "Welding Robot AD",
+            "assetProperties": [
                 {
                     "externalId": "Robot_Manufacturer",
-                    "attributeValue": "Kawasaki Robotics"
-                },
-                {
-                    "externalId": "Robot_Joint_1_Current",
-                    "alias": "sample/chicago/welding/line_1/workshop_robot_1-1/joint1_current",
+                    "attributeValue": "Universal Robots",
                     "retainDataOnAliasChange": "FALSE"
                 },
                 {
-                    "externalId": "Robot_Joint_1_Temperature",
-                    "alias": "sample/chicago/welding/line_1/workshop_robot_1-1/joint1_temperature",
+                    "externalId": "Robot_Joint_5_Temperature",
+                    "alias": "/Tag Providers/AD/default/UR/Joint_5_Temp",
                     "retainDataOnAliasChange": "FALSE"
                 },
                 {
-                    "externalId": "Robot_Joint_2_Current",
-                    "alias": "sample/chicago/welding/line_1/workshop_robot_1-1/joint2_current",
+                    "externalId": "Robot_Joint_3_Velocity",
+                    "alias": "/Tag Providers/AD/default/UR/Joint_3_Velocity",
                     "retainDataOnAliasChange": "FALSE"
                 },
                 {
                     "externalId": "Robot_Joint_2_Temperature",
-                    "alias": "sample/chicago/welding/line_1/workshop_robot_1-1/joint2_temperature",
-                    "retainDataOnAliasChange": "FALSE"
-                }
-            ],
-            "assetHierarchies": [],
-            "tags": []
-        },
-        {
-            "assetExternalId": "Workshop_Robot_1-2",
-            "assetModelExternalId": "Workshop_Robot",
-            "assetName": "Welding Robot 1-2",
-            "assetProperties": [
-                {
-                    "externalId": "Robot_Serial_Number",
-                    "attributeValue": "SN1200"
-                },
-                {
-                    "externalId": "Robot_Manufacturer",
-                    "attributeValue": "Kawasaki Robotics"
-                },
-                {
-                    "externalId": "Robot_Joint_1_Current",
-                    "alias": "sample/chicago/welding/line_1/workshop_robot_1-2/joint1_current",
+                    "alias": "/Tag Providers/AD/default/UR/Joint_2_Temp",
                     "retainDataOnAliasChange": "FALSE"
                 },
+                {
+                    "externalId": "Robot_Joint_3_Temperature",
+                    "alias": "/Tag Providers/AD/default/UR/Joint_3_Temp",
+                    "retainDataOnAliasChange": "FALSE"
+                },
+                {
+                    "externalId": "Robot_Joint_0_Temperature",
+                    "alias": "/Tag Providers/AD/default/UR/Joint_0_Temp",
+                    "retainDataOnAliasChange": "FALSE"
+                },
+                {
+                    "externalId": "Robot_Joint_2_Velocity",
+                    "alias": "/Tag Providers/AD/default/UR/Joint_2_Velocity",
+                    "retainDataOnAliasChange": "FALSE"
+                },
+                {
+                    "externalId": "Robot_Joint_4_Temperature",
+                    "alias": "/Tag Providers/AD/default/UR/Joint_4_Temp",
+                    "retainDataOnAliasChange": "FALSE"
+                },
+                {
+                    "externalId": "Robot_Joint_1_Velocity",
+                    "alias": "/Tag Providers/AD/default/UR/Joint_1_Velocity",
+                    "retainDataOnAliasChange": "FALSE"
+                },
+    
                 {
                     "externalId": "Robot_Joint_1_Temperature",
-                    "alias": "sample/chicago/welding/line_1/workshop_robot_1-2/joint1_temperature",
+                    "alias": "/Tag Providers/AD/default/UR/Joint_1_Temp",
                     "retainDataOnAliasChange": "FALSE"
                 },
                 {
-                    "externalId": "Robot_Joint_2_Current",
-                    "alias": "sample/chicago/welding/line_1/workshop_robot_1-2/joint2_current",
+                    "externalId": "Robot_Joint_4_Velocity",
+                    "alias": "/Tag Providers/AD/default/UR/Joint_4_Velocity",
                     "retainDataOnAliasChange": "FALSE"
                 },
                 {
-                    "externalId": "Robot_Joint_2_Temperature",
-                    "alias": "sample/chicago/welding/line_1/workshop_robot_1-2/joint2_temperature",
+                    "externalId": "Robot_Joint_0_Velocity",
+                    "alias": "/Tag Providers/AD/default/UR/Joint_0_Velocity",
+                    "retainDataOnAliasChange": "FALSE"
+                },
+                {
+                    "externalId": "Robot_Joint_5_Velocity",
+                    "alias": "/Tag Providers/AD/default/UR/Joint_5_Velocity",
                     "retainDataOnAliasChange": "FALSE"
                 }
             ],
@@ -199,36 +513,13 @@
             "tags": []
         },
         {
-            "assetExternalId": "Workshop_Robot_2-1",
-            "assetModelExternalId": "Workshop_Robot",
-            "assetName": "Welding Robot 2-1",
+            "assetExternalId": "Workshop_Painting_Robot_1_AD",
+            "assetModelExternalId": "Workshop_Painting_Robot_AD",
+            "assetName": "Painting Robot AD",
             "assetProperties": [
                 {
-                    "externalId": "Robot_Serial_Number",
-                    "attributeValue": "SN2100"
-                },
-                {
                     "externalId": "Robot_Manufacturer",
-                    "attributeValue": "ABB"
-                },
-                {
-                    "externalId": "Robot_Joint_1_Current",
-                    "alias": "sample/chicago/welding/line_2/workshop_robot_2-1/joint1_current",
-                    "retainDataOnAliasChange": "FALSE"
-                },
-                {
-                    "externalId": "Robot_Joint_1_Temperature",
-                    "alias": "sample/chicago/welding/line_2/workshop_robot_2-1/joint1_temperature",
-                    "retainDataOnAliasChange": "FALSE"
-                },
-                {
-                    "externalId": "Robot_Joint_2_Current",
-                    "alias": "sample/chicago/welding/line_2/workshop_robot_2-1/joint2_current",
-                    "retainDataOnAliasChange": "FALSE"
-                },
-                {
-                    "externalId": "Robot_Joint_2_Temperature",
-                    "alias": "sample/chicago/welding/line_2/workshop_robot_2-1/joint2_temperature",
+                    "attributeValue": "FANUC",
                     "retainDataOnAliasChange": "FALSE"
                 }
             ],
@@ -236,177 +527,11 @@
             "tags": []
         },
         {
-            "assetExternalId": "Workshop_Robot_2-2",
-            "assetModelExternalId": "Workshop_Robot",
-            "assetName": "Welding Robot 2-2",
-            "assetProperties": [
-                {
-                    "externalId": "Robot_Serial_Number",
-                    "attributeValue": "SN2200"
-                },
-                {
-                    "externalId": "Robot_Manufacturer",
-                    "attributeValue": "Kawasaki Robotics"
-                },
-                {
-                    "externalId": "Robot_Joint_1_Current",
-                    "alias": "sample/chicago/welding/line_2/workshop_robot_2-2/joint1_current",
-                    "retainDataOnAliasChange": "FALSE"
-                },
-                {
-                    "externalId": "Robot_Joint_1_Temperature",
-                    "alias": "sample/chicago/welding/line_2/workshop_robot_2-2/joint1_temperature",
-                    "retainDataOnAliasChange": "FALSE"
-                },
-                {
-                    "externalId": "Robot_Joint_2_Current",
-                    "alias": "sample/chicago/welding/line_2/workshop_robot_2-2/joint2_current",
-                    "retainDataOnAliasChange": "FALSE"
-                },
-                {
-                    "externalId": "Robot_Joint_2_Temperature",
-                    "alias": "sample/chicago/welding/line_2/workshop_robot_2-2/joint2_temperature",
-                    "retainDataOnAliasChange": "FALSE"
-                }
-            ],
-            "assetHierarchies": [],
-            "tags": []
-        },
-        {
-            "assetExternalId": "Workshop_Line_1",
-            "assetModelExternalId": "Workshop_Line",
-            "assetName": "Welding Line 1",
-            "assetProperties": [],
-            "assetHierarchies": [
-                {
-                    "externalId": "Line_To_Robot",
-                    "childAssetExternalId": "Workshop_Robot_1-1"
-                },
-                {
-                    "externalId": "Line_To_Robot",
-                    "childAssetExternalId": "Workshop_Robot_1-2"
-                }
-            ],
-            "tags": []
-        },
-        {
-            "assetExternalId": "Workshop_Line_2",
-            "assetModelExternalId": "Workshop_Line",
-            "assetName": "Welding Line 2",
-            "assetProperties": [],
-            "assetHierarchies": [
-                {
-                    "externalId": "Line_To_Robot",
-                    "childAssetExternalId": "Workshop_Robot_2-1"
-                },
-                {
-                    "externalId": "Line_To_Robot",
-                    "childAssetExternalId": "Workshop_Robot_2-2"
-                }
-            ],
-            "tags": []
-        },
-        {
-            "assetExternalId": "Workshop_Shop_Stamping",
-            "assetModelExternalId": "Workshop_Shop",
-            "assetName": "Stamping",
+            "assetExternalId": "Workshop_Painting_Conveyer_1_AD",
+            "assetModelExternalId": "Workshop_Conveyer_AD",
+            "assetName": "Painting Conveyer AD",
             "assetProperties": [],
             "assetHierarchies": [],
-            "tags": []
-        },
-        {
-            "assetExternalId": "Workshop_Shop_Welding",
-            "assetModelExternalId": "Workshop_Shop",
-            "assetName": "Welding",
-            "assetProperties": [],
-            "assetHierarchies": [
-                {
-                    "externalId": "Shop_To_Line",
-                    "childAssetExternalId": "Workshop_Line_1"
-                },
-                {
-                    "externalId": "Shop_To_Line",
-                    "childAssetExternalId": "Workshop_Line_2"
-                }
-            ],
-            "tags": []
-        },
-        {
-            "assetExternalId": "Workshop_Shop_Engine",
-            "assetModelExternalId": "Workshop_Shop",
-            "assetName": "Engine",
-            "assetProperties": [],
-            "assetHierarchies": [],
-            "tags": []
-        },
-        {
-            "assetExternalId": "Workshop_Shop_Paint",
-            "assetModelExternalId": "Workshop_Shop",
-            "assetName": "Paint",
-            "assetProperties": [],
-            "assetHierarchies": [],
-            "tags": []
-        },
-        {
-            "assetExternalId": "Workshop_Plant_Chicago",
-            "assetModelExternalId": "Workshop_Plant",
-            "assetName": "Chicago",
-            "assetProperties": [],
-            "assetHierarchies": [
-                {
-                    "externalId": "Plant_To_Shop",
-                    "childAssetExternalId": "Workshop_Shop_Stamping"
-                },
-                {
-                    "externalId": "Plant_To_Shop",
-                    "childAssetExternalId": "Workshop_Shop_Welding"
-                },
-                {
-                    "externalId": "Plant_To_Shop",
-                    "childAssetExternalId": "Workshop_Shop_Engine"
-                },
-                {
-                    "externalId": "Plant_To_Shop",
-                    "childAssetExternalId": "Workshop_Shop_Paint"
-                }
-            ],
-            "tags": []
-        },
-        {
-            "assetExternalId": "Workshop_Plant_Detroit",
-            "assetModelExternalId": "Workshop_Plant",
-            "assetName": "Detroit",
-            "assetProperties": [],
-            "assetHierarchies": [],
-            "tags": []
-        },
-        {
-            "assetExternalId": "Workshop_Plant_Fremont",
-            "assetModelExternalId": "Workshop_Plant",
-            "assetName": "Fremont",
-            "assetProperties": [],
-            "assetHierarchies": [],
-            "tags": []
-        },
-        {
-            "assetExternalId": "Workshop_Corporate_AnyCompany",
-            "assetModelExternalId": "Workshop_Corporate",
-            "assetName": "AnyCompany Motor",
-            "assetProperties": [],
-            "assetHierarchies": [
-                {
-                    "externalId": "Corporate_To_Plant",
-                    "childAssetExternalId": "Workshop_Plant_Chicago"
-                },
-                {
-                    "externalId": "Corporate_To_Plant",
-                    "childAssetExternalId": "Workshop_Plant_Detroit"
-                },
-                {
-                    "externalId": "Corporate_To_Plant",
-                    "childAssetExternalId": "Workshop_Plant_Fremont"
-                }
-            ],
             "tags": []
         }
     ]
