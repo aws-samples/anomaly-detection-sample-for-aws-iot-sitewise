@@ -1,32 +1,30 @@
 metadata_bulk_operations:
-  s3_bucket_name: <VALUE>
+  s3_bucket_name: my-bucket
 data_import:
-  s3_bucket_name: <VALUE>
-  error_prefix: <VALUE>
-  data_prefix: <VALUE>
-  role_arn: <VALUE>
+  s3_bucket_name: my-bucket
+  error_prefix: data-bulk-import/errors/
+  data_prefix: data-bulk-import/data/
+  role_arn: arn:aws:iam::000000000000:role/SiteWiseBulkImportRole
 anomaly_detection:
-  asset_id: <VALUE>
+  asset_id: fc1b355e-513b-443d-9c13-51daf5bed260
   input_property_ids:
-    - <VALUE>
-    - <VALUE>
-    - <VALUE>
-    - <VALUE>
-  result_property_id: <VALUE>
-  computation_model_name: <VALUE>
+    - 4ce4530f-a790-476e-a1fc-99f70e3345c9
+    - 6eb1e060-9493-4b3d-91ed-61dd70b9033e
+  result_property_id: 225710a9-3d20-4c37-ae5f-2d252e887da2
+  computation_model_name: welding_robot_computational_model
   training:
-    data_start_time: <VALUE>
-    data_end_time: <VALUE>
-    target_sampling_rate: <VALUE>
+    data_start_time: 1738855426
+    data_end_time: 1740787200
+    target_sampling_rate: PT1M
     labels:
-      bucket_name: <VALUE>
-      prefix: <VALUE>
+      bucket_name: my-bucket
+      prefix: labels/
     evaluation:
-      bucket_name: <VALUE>
-      prefix: <VALUE>
-      data_start_time: <VALUE>
-      data_end_time: <VALUE>
+      bucket_name: my-bucket
+      prefix: evaluation_results/
+      data_start_time: 1740787200
+      data_end_time: 1741274626
   inference:
-    data_delay_offset_minutes: <VALUE>
-    data_upload_frequency: <VALUE>
-    weekly_operating_window: <VALUE>
+    data_delay_offset_minutes: 3
+    data_upload_frequency: PT5M
+    weekly_operating_window: 

@@ -133,8 +133,12 @@ class AnomalyModelTrainer:
         action_payload = {
             "exportDataStartTime": training_config["data_start_time"],
             "exportDataEndTime": training_config["data_end_time"],
-            "targetSamplingRate": training_config["target_sampling_rate"],
-            "modelEvaluationConfiguration": {
+            "targetSamplingRate": training_config["target_sampling_rate"]
+        }
+        
+        # Add evaluation if provided
+        if training_config["evaluation"]["bucket_name"]:
+            action_payload["modelEvaluationConfiguration"] = {
                 "dataStartTime": training_config["evaluation"]["data_start_time"],
                 "dataEndTime": training_config["evaluation"]["data_end_time"],
                 "resultDestination": {
@@ -142,7 +146,9 @@ class AnomalyModelTrainer:
                     "prefix": training_config["evaluation"]["prefix"]
                 }
             }
-        }
+            logger.info("Starting to train with evaluation")
+        else:
+            logger.info("Starting to train without evaluation")
         
         # Add labels if provided
         if training_config["labels"]["bucket_name"]:

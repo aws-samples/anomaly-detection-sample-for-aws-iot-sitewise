@@ -23,7 +23,7 @@ python3 src/data-simulation/import_historical_data.py \
 # Example:
 '''
 python3 src/data-simulation/import_historical_data.py \
-  --data-file-name ebike_data_historical_30_days.csv
+  --data-file-name historical_data_sample.csv
 '''
 
 import pandas as pd

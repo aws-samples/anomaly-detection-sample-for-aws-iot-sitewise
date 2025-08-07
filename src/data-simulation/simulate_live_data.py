@@ -23,7 +23,7 @@ python3 src/data-simulation/simulate_live_data.py \
 # Example:
 '''
 nohup python3 src/data-simulation/simulate_live_data.py \
-  --data-file-name ebike_data_historical_30_days.csv \
+  --data-file-name historical_data_sample.csv \
     >> src/data-simulation/data_simulation.log 2>&1 &
 '''
 

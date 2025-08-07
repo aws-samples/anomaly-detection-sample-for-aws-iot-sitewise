@@ -137,6 +137,7 @@
                     }
                 },
                 {
+                    "id": "4ce4530f-a790-476e-a1fc-99f70e3345c9",
                     "externalId": "Robot_Joint_0_Temperature",
                     "name": "Joint 0 Temperature",
                     "dataType": "DOUBLE",
@@ -191,6 +192,7 @@
                     }
                 },
                 {
+                    "id": "6eb1e060-9493-4b3d-91ed-61dd70b9033e",
                     "externalId": "Robot_Joint_0_Velocity",
                     "name": "Joint 0 Velocity",
                     "dataType": "DOUBLE",
@@ -245,6 +247,7 @@
                     }
                 },
                 {
+                    "id": "225710a9-3d20-4c37-ae5f-2d252e887da2",
                     "externalId": "Robot_Anomaly_Result",
                     "name": "Anomaly Result",
                     "dataType": "STRING",
@@ -438,6 +441,7 @@
             "tags": []
         },
         {
+            "assetId": "fc1b355e-513b-443d-9c13-51daf5bed260",
             "assetExternalId": "Workshop_Welding_Robot_1_AD",
             "assetModelExternalId": "Workshop_Welding_Robot_AD",
             "assetName": "Welding Robot AD",
