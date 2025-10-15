@@ -42,6 +42,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+LABELS_FILE_NAME = "labels_sample.csv"
 DATA_COLUMN_NAMES = ["TIMESTAMP_SECONDS", "ALIAS", "VALUE", "DATA_TYPE", "TIMESTAMP_NANO_OFFSET", "QUALITY"]
 
 class HistoricalDataImporter:
@@ -86,13 +87,12 @@ class HistoricalDataImporter:
         logger.info(f"Transformed data saved at {output_path}")
         
         return str(output_path)
-    
-    def upload_to_s3(self, file_path: str, s3_key: str) -> None:
+
+    def upload_to_s3(self, file_path: str, s3_key: str, s3_bucket_name: str) -> None:
         """Upload file to S3"""
-        bucket = self.config["data_import"]["s3_bucket_name"]
         try:
-            self.s3.upload_file(file_path, bucket, s3_key)
-            logger.info(f'Uploaded data file to S3 at s3://{bucket}/{s3_key}')
+            self.s3.upload_file(file_path, s3_bucket_name, s3_key)
+            logger.info(f'Uploaded data file to S3 at s3://{s3_bucket_name}/{s3_key}')
         except Exception as e:
             logger.error(f'Failed to upload file to S3: {e}')
             raise
@@ -165,10 +165,17 @@ class HistoricalDataImporter:
             logger.info("\nPreparing data file for SiteWise import")
             transformed_path = self.transform_data(df)
             
-            # Upload to S3
+            # Upload historical data to S3
             s3_key = f'{self.config["data_import"]["data_prefix"]}{Path(transformed_path).name}'
             logger.info("\nUploading data file to S3")
-            self.upload_to_s3(transformed_path, s3_key)
+            self.upload_to_s3(transformed_path, s3_key, self.config["data_import"]["s3_bucket_name"])
+
+            # Upload labels to S3 if labels file exists
+            labels_file_path = self.data_dir / LABELS_FILE_NAME
+            if labels_file_path.exists():
+                labels_s3_key = f'{self.config["anomaly_detection"]["training"]["labels"]["prefix"]}{Path(labels_file_path).name}'
+                logger.info("\nUploading labels file to S3")
+                self.upload_to_s3(labels_file_path, labels_s3_key, self.config["anomaly_detection"]["training"]["labels"]["bucket_name"])
             
             # Create and monitor import job
             logger.info("\nCreating SiteWise bulk import job")
