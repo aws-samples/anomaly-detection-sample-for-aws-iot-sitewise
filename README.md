@@ -89,7 +89,7 @@ AWS IoT SiteWise offers a capability called [bulk operations](https://docs.aws.a
 Start a bulk import operation and create an asset hierarchy for **AnyCompany e-Bikes AD**.
 
     python3 src/metadata-bulk-import/import_sitewise_models_assets.py \
-    >   --definitions-file-name definitions_models_assets.json
+       --definitions-file-name definitions_models_assets.json
 
 > **Note**
 > You can also track the job progress using console at **AWS IoT SiteWise console** &rarr; **Build** &rarr; **Bulk operations**
