@@ -153,7 +153,7 @@ Now that the anomaly detection model is ready for inference, once you ingest rea
 Simulate the real-time data for **Welding Robot AD**.
 
     nohup python3 src/data-simulation/simulate_live_data.py \
-    --data-file-name historical_data_sample.csv \
+    --data-file-name historical_data_sample_abnormal.csv \
     >> src/data-simulation/data_simulation.log 2>&1 &
 
 You can verify the data ingestion using AWS IoT SiteWise console:
